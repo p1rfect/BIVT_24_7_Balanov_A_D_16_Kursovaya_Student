@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Реестр студентов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #edf3f0;
+            color: #15261f;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+        }
+
+        .login-layout {
+            width: min(920px, 100%);
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            background: #ffffff;
+            border: 1px solid #d8e3de;
+            min-height: 520px;
+            box-shadow: 0 24px 60px rgba(22, 43, 34, 0.14);
+        }
+
+        .intro-panel {
+            background: #18392f;
+            color: #f8fbf8;
+            padding: 46px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .intro-panel h1 {
+            font-size: 42px;
+            line-height: 1.08;
+            margin-bottom: 18px;
+        }
+
+        .intro-panel p {
+            color: #cbded5;
+            line-height: 1.6;
+            max-width: 360px;
+        }
+
+        .badge {
+            width: fit-content;
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,0.32);
+            color: #dbeae3;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .login-panel {
+            padding: 46px 42px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 26px;
+            color: #18392f;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #49665a;
+            margin: 18px 0 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 0;
+            border: 0;
+            border-bottom: 2px solid #cbd8d2;
+            font-size: 16px;
+            background: transparent;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #b7791f;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 14px 18px;
+            border: 0;
+            background: #b7791f;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #966116;
+        }
+
+        .error {
+            background: #fde8e8;
+            color: #8f1d1d;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-left: 4px solid #c53030;
+        }
+
+        .info {
+            margin-top: 26px;
+            color: #587064;
+            font-size: 14px;
+            line-height: 1.55;
+            background: #f5f8f6;
+            padding: 16px;
+        }
+
+        @media (max-width: 760px) {
+            .login-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-layout">
+        <section class="intro-panel">
+            <div>
+                <div class="badge">Учебный портал</div>
+                <h1>Реестр студентов</h1>
+                <p>Единая точка доступа к карточкам обучающихся, группам и статусам записей.</p>
+            </div>
+            <p>Клиент-серверное приложение FastAPI + SQLAlchemy.</p>
+        </section>
+
+        <section class="login-panel">
+            <h2>Вход в систему</h2>
+
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="admin@example.com" required autofocus>
+
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="admin123" required>
+
+                <button type="submit">Войти</button>
+            </form>
+
+            <div class="info">
+                <strong>Тестовые аккаунты:</strong><br>
+                admin@example.com / admin123 (администратор)<br>
+                user@example.com / user123 (пользователь)
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенты - Реестр обучающихся</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <span class="brand-mark">ИС</span>
+                <div>
+                    <div class="brand-title">Реестр студентов</div>
+                    <div class="brand-subtitle">учебный проект</div>
+                </div>
+            </div>
+
+            <nav class="side-nav">
+                <span class="nav-item active">Список</span>
+                <span class="nav-item">Карточки</span>
+                <span class="nav-item">Группы</span>
+            </nav>
+
+            <div class="profile-card">
+                <span class="profile-label">Текущий пользователь</span>
+                <strong>{{ user.name }}</strong>
+                <span class="role-pill">{{ role }}</span>
+                <a href="/logout" class="logout-btn">Выйти</a>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <section class="hero-panel">
+                <div>
+                    <p class="eyebrow">Информационная система</p>
+                    <h1>Учёт студентов</h1>
+                    <p class="hero-text">Просмотр карточек, поиск по группе и управление записями обучающихся.</p>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <span id="totalStudents">0</span>
+                        <small>студентов</small>
+                    </div>
+                    <div class="stat-card">
+                        <span id="groupCount">0</span>
+                        <small>групп</small>
+                    </div>
+                </div>
+            </section>
+
+            {% if role == 'admin' %}
+            <section class="admin-panel">
+                <button id="toggleFormBtn" class="toggle-form-btn">+ Новая запись</button>
+
+                <div id="studentFormContainer" class="form-container" style="display: none;">
+                    <div class="form-card">
+                        <div class="section-heading">
+                            <span>01</span>
+                            <h2>Добавление студента</h2>
+                        </div>
+                        <form id="studentForm" class="student-form">
+                            <div class="form-group wide">
+                                <label>ФИО</label>
+                                <input type="text" id="full_name" placeholder="Баланов Артём Дмитриевич" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Номер зачётной книжки</label>
+                                <input type="text" id="record_book" placeholder="24-7-016" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Группа</label>
+                                <input type="text" id="group" placeholder="БИВТ-24-7" required list="groups-list">
+                                <datalist id="groups-list"></datalist>
+                            </div>
+
+                            <div class="form-group wide">
+                                <label>Направление подготовки</label>
+                                <input type="text" id="direction" placeholder="09.03.01 Информатика и вычислительная техника" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Курс</label>
+                                <input type="text" id="course" placeholder="2" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Статус</label>
+                                <select id="status">
+                                    <option value="Обучается">Обучается</option>
+                                    <option value="Академический отпуск">Академический отпуск</option>
+                                    <option value="Отчислен">Отчислен</option>
+                                    <option value="Выпускник">Выпускник</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group wide">
+                                <label>Описание</label>
+                                <textarea id="description" rows="4" placeholder="Дополнительная информация о студенте"></textarea>
+                            </div>
+
+                            <div class="form-buttons wide">
+                                <button type="submit" class="submit-btn">Сохранить</button>
+                                <button type="button" id="cancelFormBtn" class="cancel-btn">Отмена</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="registry-panel">
+                <div class="section-heading">
+                    <span>02</span>
+                    <h2>Список студентов</h2>
+                </div>
+
+                <div class="toolbar">
+                    <input type="text" id="searchInput" placeholder="Найти по ФИО, зачётке или группе" class="search-input">
+                    <button id="refreshBtn" class="refresh-btn">Обновить</button>
+                </div>
+
+                <div id="studentsList" class="students-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.currentUserRole = "{{ role }}";
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

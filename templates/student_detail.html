@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ student.full_name }} - Реестр студентов</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="compact-header">
+            <a href="/" class="back-btn">← К списку</a>
+            <div class="compact-user">
+                <span>{{ user.name }} ({{ role }})</span>
+                <a href="/logout" class="logout-btn">Выйти</a>
+            </div>
+        </header>
+
+        <main class="detail-layout">
+            <section class="student-passport">
+                <div class="avatar-placeholder">{{ student.full_name[:1] }}</div>
+                <p class="eyebrow">Карточка студента</p>
+                <h1 class="detail-name">{{ student.full_name }}</h1>
+                <p class="detail-record">Зачётная книжка № {{ student.record_book }}</p>
+                <span class="status-badge status-{{ student.status.replace(' ', '_') }}">{{ student.status }}</span>
+            </section>
+
+            <section class="detail-card">
+                <div class="detail-row">
+                    <span class="detail-label">Группа</span>
+                    <span class="detail-value">{{ student.group }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Направление</span>
+                    <span class="detail-value">{{ student.direction }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Курс</span>
+                    <span class="detail-value">{{ student.course }}</span>
+                </div>
+                {% if student.description %}
+                <div class="detail-row description-row">
+                    <span class="detail-label">Описание</span>
+                    <span class="detail-value description-text">{{ student.description }}</span>
+                </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

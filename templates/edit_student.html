@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование - {{ student.full_name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="compact-header">
+            <a href="/" class="back-btn">← К списку</a>
+            <div class="compact-user">
+                <span>{{ user.name }} ({{ role }})</span>
+                <a href="/logout" class="logout-btn">Выйти</a>
+            </div>
+        </header>
+
+        <main class="edit-layout">
+            <section class="edit-intro">
+                <p class="eyebrow">Администрирование</p>
+                <h1>Редактирование студента</h1>
+                <p>Изменения сохраняются через PUT-запрос и доступны только пользователю с ролью администратора.</p>
+            </section>
+
+            <section class="form-card">
+                <form id="editStudentForm" class="student-form">
+                    <div class="form-group wide">
+                        <label>ФИО</label>
+                        <input type="text" id="full_name" value="{{ student.full_name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Номер зачётной книжки</label>
+                        <input type="text" id="record_book" value="{{ student.record_book }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Группа</label>
+                        <input type="text" id="group" value="{{ student.group }}" required list="groups-list">
+                        <datalist id="groups-list"></datalist>
+                    </div>
+
+                    <div class="form-group wide">
+                        <label>Направление подготовки</label>
+                        <input type="text" id="direction" value="{{ student.direction }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Курс</label>
+                        <input type="text" id="course" value="{{ student.course }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Статус</label>
+                        <select id="status">
+                            <option value="Обучается" {% if student.status == 'Обучается' %}selected{% endif %}>Обучается</option>
+                            <option value="Академический отпуск" {% if student.status == 'Академический отпуск' %}selected{% endif %}>Академический отпуск</option>
+                            <option value="Отчислен" {% if student.status == 'Отчислен' %}selected{% endif %}>Отчислен</option>
+                            <option value="Выпускник" {% if student.status == 'Выпускник' %}selected{% endif %}>Выпускник</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group wide">
+                        <label>Описание</label>
+                        <textarea id="description" rows="5">{{ student.description or '' }}</textarea>
+                    </div>
+
+                    <div class="form-buttons wide">
+                        <button type="submit" class="submit-btn">Сохранить</button>
+                        <a href="/" class="cancel-btn">Отмена</a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const studentId = "{{ student.id }}";
+
+        async function loadGroupsHints() {
+            try {
+                const response = await fetch('/groups');
+                const groups = await response.json();
+
+                const datalist = document.getElementById('groups-list');
+                if (datalist) {
+                    datalist.innerHTML = '';
+                    groups.forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.name;
+                        datalist.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки групп:', error);
+            }
+        }
+
+        document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedStudent = {
+                full_name: document.getElementById('full_name').value,
+                record_book: document.getElementById('record_book').value,
+                group: document.getElementById('group').value,
+                direction: document.getElementById('direction').value,
+                course: document.getElementById('course').value,
+                description: document.getElementById('description').value,
+                status: document.getElementById('status').value
+            };
+
+            try {
+                const response = await fetch(`/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedStudent)
+                });
+
+                if (response.ok) {
+                    alert('Студент успешно обновлен!');
+                    window.location.href = '/';
+                } else {
+                    const error = await response.json();
+                    alert('Ошибка: ' + JSON.stringify(error));
+                }
+            } catch (error) {
+                alert('Ошибка соединения');
+            }
+        });
+
+        loadGroupsHints();
+    </script>
+</body>
+</html>

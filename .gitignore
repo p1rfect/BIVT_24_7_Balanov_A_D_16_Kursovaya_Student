@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+students.db
+students_app_*.log
+server_runtime*.log
+
+.pytest_cache/
+.ruff_cache/
