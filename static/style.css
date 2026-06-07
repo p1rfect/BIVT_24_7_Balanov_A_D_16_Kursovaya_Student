@@ -77,9 +77,24 @@ body {
 }
 
 .nav-item {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 0;
     padding: 12px 14px;
     border-left: 3px solid transparent;
     color: #dbe9e2;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.nav-item:hover,
+.nav-item:focus-visible {
+    background: rgba(255,255,255,0.12);
+    color: #ffffff;
+    outline: none;
 }
 
 .nav-item.active {
@@ -174,6 +189,7 @@ h2 {
 
 .admin-panel,
 .registry-panel,
+.groups-panel,
 .form-card,
 .detail-card,
 .student-passport,
@@ -183,7 +199,8 @@ h2 {
 }
 
 .admin-panel,
-.registry-panel {
+.registry-panel,
+.groups-panel {
     padding: 24px;
 }
 
@@ -293,6 +310,52 @@ textarea:focus {
     margin-bottom: 18px;
 }
 
+.groups-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.group-chip {
+    min-height: 82px;
+    border: 1px solid var(--line);
+    background: #fbfdfc;
+    color: var(--ink);
+    padding: 16px;
+    display: grid;
+    align-content: space-between;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.group-chip strong {
+    font-size: 18px;
+}
+
+.group-chip span {
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.group-chip:hover,
+.group-chip:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.group-chip.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #ffffff;
+}
+
+.group-chip.active span {
+    color: #cbded5;
+}
+
 .search-input {
     background: #ffffff;
 }
@@ -318,6 +381,16 @@ textarea:focus {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: stretch;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.student-card:hover,
+.student-card:focus-visible {
+    border-color: var(--accent);
+    box-shadow: 0 12px 26px rgba(24, 57, 47, 0.10);
+    transform: translateY(-1px);
+    outline: none;
 }
 
 .student-main {
@@ -326,7 +399,6 @@ textarea:focus {
     gap: 16px;
     align-items: center;
     padding: 16px;
-    cursor: pointer;
 }
 
 .student-avatar,
