@@ -17,10 +17,10 @@
                 </div>
             </div>
 
-            <nav class="side-nav">
-                <span class="nav-item active">Список</span>
-                <span class="nav-item">Карточки</span>
-                <span class="nav-item">Группы</span>
+            <nav class="side-nav" aria-label="Разделы приложения">
+                <button type="button" class="nav-item active" data-target="students-section">Список</button>
+                <button type="button" class="nav-item" data-target="students-section">Карточки</button>
+                <button type="button" class="nav-item" data-target="groups-section">Группы</button>
             </nav>
 
             <div class="profile-card">
@@ -50,6 +50,14 @@
                 </div>
             </section>
 
+            <section class="groups-panel" id="groups-section">
+                <div class="section-heading">
+                    <span>01</span>
+                    <h2>Учебные группы</h2>
+                </div>
+                <div id="groupsList" class="groups-list"></div>
+            </section>
+
             {% if role == 'admin' %}
             <section class="admin-panel">
                 <button id="toggleFormBtn" class="toggle-form-btn">+ Новая запись</button>
@@ -57,7 +65,7 @@
                 <div id="studentFormContainer" class="form-container" style="display: none;">
                     <div class="form-card">
                         <div class="section-heading">
-                            <span>01</span>
+                            <span>02</span>
                             <h2>Добавление студента</h2>
                         </div>
                         <form id="studentForm" class="student-form">
@@ -112,9 +120,9 @@
             </section>
             {% endif %}
 
-            <section class="registry-panel">
+            <section class="registry-panel" id="students-section">
                 <div class="section-heading">
-                    <span>02</span>
+                    <span>03</span>
                     <h2>Список студентов</h2>
                 </div>
 

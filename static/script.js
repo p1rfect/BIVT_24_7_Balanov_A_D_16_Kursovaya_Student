@@ -11,7 +11,16 @@ function init() {
 
 function setupEventListeners() {
     document.getElementById('refreshBtn').addEventListener('click', () => loadStudents());
-    document.getElementById('searchInput').addEventListener('input', filterStudents);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            const target = document.getElementById(item.dataset.target);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
 
     const toggleBtn = document.getElementById(TOGGLE_BTN_ID);
     if (toggleBtn) toggleBtn.addEventListener('click', toggleForm);
@@ -44,7 +53,9 @@ async function loadGroupsHints() {
     try {
         const response = await fetch('/groups');
         const groups = await response.json();
+        allGroups = groups;
         updateGroupCounter(groups.length);
+        renderGroupFilters();
 
         const datalist = document.getElementById('groups-list');
         if (datalist) {
@@ -57,6 +68,8 @@ async function loadGroupsHints() {
         }
     } catch (error) {
         console.error('Ошибка загрузки групп:', error);
+        const groupsList = document.getElementById('groupsList');
+        if (groupsList) groupsList.innerHTML = '<div class="empty-message">Не удалось загрузить группы</div>';
     }
 }
 
@@ -68,7 +81,10 @@ async function loadStudents() {
             return;
         }
         const students = await response.json();
-        renderStudents(students);
+        allStudents = students;
+        updateStudentCounter(students.length);
+        renderGroupFilters();
+        applyFilters();
     } catch (error) {
         console.error('Ошибка:', error);
         document.getElementById('studentsList').innerHTML = '<div class="empty-message">Не удалось загрузить список студентов</div>';
@@ -76,20 +92,19 @@ async function loadStudents() {
 }
 
 let allStudents = [];
+let allGroups = [];
+let activeGroupFilter = '';
 
 function renderStudents(students) {
-    allStudents = students;
-    updateStudentCounter(students.length);
-
     const container = document.getElementById('studentsList');
     if (students.length === 0) {
-        container.innerHTML = '<div class="empty-message">Нет данных о студентах. Добавьте первую запись.</div>';
+        container.innerHTML = '<div class="empty-message">Нет студентов по выбранному фильтру.</div>';
         return;
     }
 
     container.innerHTML = students.map(student => `
-        <article class="student-card" data-id="${student.id}">
-            <div class="student-main" onclick="goToStudentPage('${student.id}')">
+        <article class="student-card" data-id="${student.id}" onclick="goToStudentPage('${student.id}')" role="button" tabindex="0">
+            <div class="student-main">
                 <div class="student-avatar">${escapeHtml(getInitials(student.full_name))}</div>
                 <div class="student-summary">
                     <div class="student-name">${escapeHtml(student.full_name)}</div>
@@ -100,7 +115,7 @@ function renderStudents(students) {
                         <span>${escapeHtml(shortDirection(student.direction))}</span>
                     </div>
                 </div>
-                <span class="status-badge status-${student.status.replace(/ /g, '_')}">${student.status}</span>
+                <span class="status-badge status-${student.status.replace(/ /g, '_')}">${escapeHtml(student.status)}</span>
             </div>
             ${window.currentUserRole === 'admin' ? `
                 <div class="student-actions">
@@ -125,6 +140,51 @@ function renderStudents(students) {
             const id = btn.getAttribute('data-id');
             deleteStudent(id);
         };
+    });
+    document.querySelectorAll('.student-card').forEach(card => {
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') goToStudentPage(card.dataset.id);
+        });
+    });
+}
+
+function renderGroupFilters() {
+    const container = document.getElementById('groupsList');
+    if (!container) return;
+
+    if (allGroups.length === 0) {
+        container.innerHTML = '<div class="empty-message">Группы пока не добавлены.</div>';
+        return;
+    }
+
+    const stats = allStudents.reduce((acc, student) => {
+        if (!student.group) return acc;
+        acc[student.group] = (acc[student.group] || 0) + 1;
+        return acc;
+    }, {});
+
+    const groupButtons = allGroups.map(group => `
+        <button type="button" class="group-chip ${activeGroupFilter === group.name ? 'active' : ''}" data-group="${escapeAttribute(group.name)}">
+            <strong>${escapeHtml(group.name)}</strong>
+            <span>${stats[group.name] || 0} студ.</span>
+        </button>
+    `).join('');
+
+    container.innerHTML = `
+        <button type="button" class="group-chip ${activeGroupFilter === '' ? 'active' : ''}" data-group="">
+            <strong>Все группы</strong>
+            <span>${allStudents.length} студ.</span>
+        </button>
+        ${groupButtons}
+    `;
+
+    container.querySelectorAll('.group-chip').forEach(button => {
+        button.addEventListener('click', () => {
+            activeGroupFilter = button.dataset.group || '';
+            applyFilters();
+            renderGroupFilters();
+            document.getElementById('students-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
     });
 }
 
@@ -159,12 +219,15 @@ function goToStudentPage(id) {
     window.location.href = `/student/${id}`;
 }
 
-function filterStudents() {
+function applyFilters() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const filtered = allStudents.filter(student =>
-        student.full_name.toLowerCase().includes(searchTerm) ||
-        student.record_book.toLowerCase().includes(searchTerm) ||
-        (student.group && student.group.toLowerCase().includes(searchTerm))
+        (
+            student.full_name.toLowerCase().includes(searchTerm) ||
+            student.record_book.toLowerCase().includes(searchTerm) ||
+            (student.group && student.group.toLowerCase().includes(searchTerm))
+        ) &&
+        (!activeGroupFilter || student.group === activeGroupFilter)
     );
     renderStudents(filtered);
 }
@@ -218,7 +281,8 @@ async function deleteStudent(id) {
             return;
         }
         if (response.ok) {
-            loadStudents();
+            await loadGroupsHints();
+            await loadStudents();
             alert('Студент удален!');
         } else {
             alert('Ошибка при удалении');
@@ -236,6 +300,11 @@ function escapeHtml(str) {
         if (m === '>') return '&gt;';
         return m;
     });
+}
+
+function escapeAttribute(str) {
+    if (!str) return '';
+    return escapeHtml(str).replace(/"/g, '&quot;');
 }
 
 init();

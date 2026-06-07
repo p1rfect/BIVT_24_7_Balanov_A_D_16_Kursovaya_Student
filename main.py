@@ -238,7 +238,14 @@ async def delete_student(student_id: str, request: Request, db: Session = Depend
 async def get_groups(db: Session = Depends(get_db)):
     groups = db.query(Group).all()
     log_info(f"Запрошен список групп, найдено: {len(groups)}")
-    return groups
+    return [
+        {
+            "id": group.id,
+            "name": group.name,
+            "curator": group.curator,
+        }
+        for group in groups
+    ]
 
 
 @app.get("/student/{student_id}", response_class=HTMLResponse)

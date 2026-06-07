@@ -6,6 +6,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, create_engine
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
+# По умолчанию приложение использует локальный SQLite-файл students.db.
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./students.db")
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}

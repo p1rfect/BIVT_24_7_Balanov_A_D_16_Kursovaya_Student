@@ -34,8 +34,10 @@ admin@example.com / admin123
 user@example.com / user123
 ```
 
-По умолчанию используется SQLite-файл `students.db`. Для PostgreSQL можно задать переменную окружения `DATABASE_URL`, например:
+По умолчанию используется локальный SQLite-файл `students.db`. Его создает приложение при первом запуске через SQLAlchemy.
+
+При необходимости можно поменять путь к SQLite-файлу через переменную окружения `DATABASE_URL`, например:
 
 ```text
-postgresql://postgres:admin@localhost:5432/students_db
+sqlite:///./students.db
 ```
